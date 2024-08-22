@@ -2,9 +2,25 @@ const Workout = require('../models/WorkoutModel')
 const mongoose = require('mongoose')
 
 // Get all
-const getWorkout = async(req, res) =>{
-    const workouts = await Workout.find({}).sort({createdAt: -1})
-    res.status(200).json(workouts)
+const getWorkout = async (req, res) => {
+    const { page = 1, limit = 6 } = req.query; // Default page is 1, and limit is 6
+    try {
+        const workouts = await Workout.find({})
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)  // Skip previous pages' workouts
+            .limit(Number(limit));     // Limit to the specified number of workouts
+        
+        const totalWorkouts = await Workout.countDocuments(); // Total number of workouts
+
+        res.status(200).json({ 
+            workouts, 
+            currentPage: page,
+            totalPages: Math.ceil(totalWorkouts / limit),
+            totalWorkouts
+        });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 }
 // Get Single
 const getWorkoutById = async(req, res) =>{
