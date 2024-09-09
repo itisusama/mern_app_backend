@@ -3,6 +3,7 @@ const express = require("express")
 const cors = require('cors');
 const mongoose = require('mongoose')
 const workoutRoutes = require("./routes/workouts")
+const userRoutes = require("./routes/user")
 const app = express()
 
 // Enable CORS for all routes
@@ -16,6 +17,7 @@ app.use((req, res, next) =>{
 })
 // Request Handeling
 app.use('/api/workout', workoutRoutes);
+app.use('/api/user', userRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
